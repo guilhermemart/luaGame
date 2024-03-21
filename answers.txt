@@ -1,0 +1,79 @@
+---- Q1 ----- 
+---- Improved using constants to better explain arguments call 
+local PLAYER_STORAGE_ID <const> = 1000
+local PLAYER_STORAGE_NOT_EMPTY <const> = 1
+local PLAYER_STORAGE_EMPTY <const> = -1
+
+local function releaseStorage(player)
+    player:setStorageValue(PLAYER_STORAGE_ID, PLAYER_STORAGE_EMPTY)
+    end
+    
+function onLogout(player)
+if player:getStorageValue(PLAYER_STORAGE_ID) == PLAYER_STORAGE_NOT_EMPTY then
+addEvent(releaseStorage, PLAYER_STORAGE_ID, player)
+end
+return true
+end
+------
+
+-----Q2----
+function printSmallGuildNames(memberCount)
+    -- this method is supposed to print names of all guilds that have less than memberCount max members
+    local selectGuildQuery = "SELECT name FROM guilds WHERE max_members < %d;"
+    local resultId = db.storeQuery(string.format(selectGuildQuery, memberCount))
+
+    -- Verify if the query was executed
+    if not resultId then
+        print("Error executing query.")
+        return
+        end
+
+    -- The return can be more than one guild, so loop is necessary
+    for row in result.rows(resultId) do
+        local guildName = row.name
+        print(guildName)
+        end
+
+    end
+--------
+
+-----Q3---------
+function removeMemberByNameFromPlayerParty(playerId, membername)
+    -- this function remove a member(membername) from the playerID party
+    player = Player(playerId)
+    local party = player:getParty()
+    
+    for k,v in pairs(party:getMembers()) do 
+        ---find the member by membername---
+        if v.membername == membername then 
+            party:removeMember(Player(membername))
+        end
+    end
+    end
+---------------
+
+------Q4--------
+void Game::addItemToPlayer(const std::string& recipient, uint16_t itemId)
+{
+Player* player = g_game.getPlayerByName(recipient);
+if (!player) {
+---Using smart Pointer to avoid memory leak
+smartPlayerPtr<Player> player(new Player(nullptr))
+---player = new Player(nullptr);
+if (!IOLoginData::loadPlayerByName(player, recipient)) {
+return;
+}
+}
+
+Item* item = Item::CreateItem(itemId);
+if (!item) {
+    return;
+}
+
+g_game.internalAddItem(player->getInbox(), item, INDEX_WHEREEVER, FLAG_NOLIMIT);
+
+if (player->isOffline()) {
+    IOLoginData::savePlayer(player);
+}
+}
+----------
